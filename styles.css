@@ -13,7 +13,8 @@ html, body {
     padding: 0;
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
 }
 
 * {
@@ -30,7 +31,8 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Changed from center to allow scrolling */
+    padding: 20px 0; /* Add some padding for better mobile experience */
 }
 
 .particles-container {
@@ -49,7 +51,7 @@ body {
     background: var(--background-color);
     border-radius: 12px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-    height: 90vh;
+    min-height: 90vh; /* Changed from height to min-height */
     display: flex;
     flex-direction: column;
     position: relative;
@@ -488,12 +490,13 @@ footer {
 @media (max-width: 768px) {
     body {
         background: var(--background-color);
-        align-items: flex-start;
+        padding: 0;
     }
 
     .container {
         padding: 1rem;
-        height: 100vh;
+        min-height: 100vh;
+        height: auto; /* Allow container to expand */
         border-radius: 0;
         box-shadow: none;
     }
@@ -534,8 +537,25 @@ footer {
         margin-bottom: 0;
     }
 
+    .playlist-section {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 80px; /* Add space for footer */
+    }
+
+    .tracks-container {
+        max-height: none; /* Remove max height restriction */
+    }
+
     footer {
-        padding: 0.5rem 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--background-color);
+        padding: 1rem;
+        z-index: 100;
     }
 
     .loading-text {

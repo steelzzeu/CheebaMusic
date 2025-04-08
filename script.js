@@ -23,6 +23,9 @@ class MusicPlayer {
         ];
         this.shuffledPlaylist = [...this.playlist];
         
+        // Base URL for audio files
+        this.audioBaseUrl = 'https://steelzz.com/music/';
+        
         // Enable mobile audio
         this.enableMobileAudio();
         
@@ -192,23 +195,20 @@ class MusicPlayer {
         // Create and set up new audio element
         const newAudio = new Audio();
         
-        // Try both .mp3 and .MP3 extensions
-        const tryLoad = (ext) => {
-            return new Promise((resolve, reject) => {
-                const audio = new Audio();
-                audio.addEventListener('error', reject);
-                audio.addEventListener('loadedmetadata', () => resolve(audio));
-                audio.src = `songs/${trackName}${ext}`;
-                audio.load();
-            });
-        };
+        try {
+            // Clean up old audio element and its event listeners
+            if (this.audio) {
+                this.audio.pause();
+                this.audio.src = '';
+                if (this.cleanupAudioListeners) {
+                    this.cleanupAudioListeners();
+                }
+            }
 
-        // Try both extensions
-        Promise.any([
-            tryLoad('.mp3'),
-            tryLoad('.MP3')
-        ]).then(audio => {
-            this.audio = audio;
+            // Set up new audio with hosted URL
+            this.audio = newAudio;
+            const encodedTrackName = encodeURIComponent(trackName);
+            this.audio.src = `${this.audioBaseUrl}${encodedTrackName}.mp3`;
             this.audio.volume = currentVolume;
             this.audio.preload = 'auto';
             
@@ -238,6 +238,9 @@ class MusicPlayer {
             // Update track list and UI
             this.updateTrackList();
             
+            // Load the audio
+            this.audio.load();
+            
             // Handle playback state
             if (wasPlaying) {
                 this.audio.addEventListener('canplaythrough', () => {
@@ -251,10 +254,10 @@ class MusicPlayer {
                 this.isPlaying = false;
                 this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
             }
-        }).catch(error => {
-            console.error('Failed to load track:', error);
+        } catch (error) {
+            console.error('Error loading track:', error);
             this.handleAudioError();
-        });
+        }
     }
 
     togglePlay() {

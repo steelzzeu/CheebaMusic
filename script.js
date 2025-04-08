@@ -72,41 +72,74 @@ class MusicPlayer {
     }
 
     setupEventListeners() {
-        this.playBtn.addEventListener('click', () => this.togglePlay());
-        this.prevBtn.addEventListener('click', () => this.playPrevious());
-        this.nextBtn.addEventListener('click', () => this.playNext());
-        this.shuffleBtn.addEventListener('click', () => this.toggleShuffle());
+        // Play button with direct click handler
+        const playButton = document.getElementById('play');
+        if (playButton) {
+            playButton.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Play button clicked'); // Debug log
+                this.togglePlay();
+            };
+        } else {
+            console.error('Play button not found');
+        }
+
+        // Previous button
+        const prevButton = document.getElementById('prev');
+        if (prevButton) {
+            prevButton.onclick = () => this.playPrevious();
+        }
+
+        // Next button
+        const nextButton = document.getElementById('next');
+        if (nextButton) {
+            nextButton.onclick = () => this.playNext();
+        }
+
+        // Shuffle button
+        const shuffleButton = document.getElementById('shuffle');
+        if (shuffleButton) {
+            shuffleButton.onclick = () => this.toggleShuffle();
+        }
         
         // Volume control
         const volumeSlider = document.getElementById('volume');
         const volumeBtn = document.getElementById('volume-btn');
         
-        volumeSlider.addEventListener('input', (e) => {
-            const value = parseFloat(e.target.value);
-            this.setVolume(value);
-        });
+        if (volumeSlider) {
+            volumeSlider.oninput = (e) => {
+                const value = parseFloat(e.target.value);
+                this.setVolume(value);
+            };
+        }
         
-        volumeBtn.addEventListener('click', () => this.toggleMute());
+        if (volumeBtn) {
+            volumeBtn.onclick = () => this.toggleMute();
+        }
         
         // Progress bar
-        document.querySelector('.progress-bar').addEventListener('click', (e) => {
-            const progressBar = e.currentTarget;
-            const clickPosition = e.offsetX;
-            const progressBarWidth = progressBar.offsetWidth;
-            const seekTime = (clickPosition / progressBarWidth) * this.audio.duration;
-            this.audio.currentTime = seekTime;
-        });
+        const progressBarElement = document.querySelector('.progress-bar');
+        if (progressBarElement) {
+            progressBarElement.onclick = (e) => {
+                const progressBar = e.currentTarget;
+                const clickPosition = e.offsetX;
+                const progressBarWidth = progressBar.offsetWidth;
+                const seekTime = (clickPosition / progressBarWidth) * this.audio.duration;
+                this.audio.currentTime = seekTime;
+            };
+        }
 
         // Initial track list setup
         this.updateTrackList();
 
         // Audio event listeners
-        this.audio.addEventListener('timeupdate', () => this.updateProgress());
-        this.audio.addEventListener('ended', () => this.playNext());
-        this.audio.addEventListener('error', (e) => {
+        this.audio.ontimeupdate = () => this.updateProgress();
+        this.audio.onended = () => this.playNext();
+        this.audio.onerror = (e) => {
             console.error('Audio error:', e);
             this.handleAudioError();
-        });
+        };
     }
 
     setupBackgroundPlayback() {
@@ -158,66 +191,70 @@ class MusicPlayer {
         
         // Create and set up new audio element
         const newAudio = new Audio();
-        newAudio.src = `songs/${trackName}.mp3`;
-        newAudio.volume = currentVolume;
-        newAudio.preload = 'auto'; // Preload audio for better mobile performance
         
-        // Clean up old audio element and its event listeners
-        if (this.audio) {
-            this.audio.pause();
-            this.audio.src = '';
-            if (this.cleanupAudioListeners) {
-                this.cleanupAudioListeners();
-            }
-        }
-        
-        // Replace old audio element
-        this.audio = newAudio;
-        
-        // Set up event listeners on new audio element
-        this.cleanupAudioListeners = this.setupAudioEventListeners(this.audio);
-        
-        // Update display
-        this.currentTrackElement.textContent = trackName;
-        this.currentArtistElement.textContent = 'CHEEBA';
-        
-        // Update Media Session Metadata
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: trackName,
-                artist: 'CHEEBA',
-                album: 'CHEEBA 420',
-                artwork: [
-                    {
-                        src: 'albumcover.png',
-                        sizes: '512x512',
-                        type: 'image/png'
-                    }
-                ]
+        // Try both .mp3 and .MP3 extensions
+        const tryLoad = (ext) => {
+            return new Promise((resolve, reject) => {
+                const audio = new Audio();
+                audio.addEventListener('error', reject);
+                audio.addEventListener('loadedmetadata', () => resolve(audio));
+                audio.src = `songs/${trackName}${ext}`;
+                audio.load();
             });
-        }
-        
-        // Update track list and UI
-        this.updateTrackList();
-        
-        // Load the audio
-        this.audio.load();
-        
-        // Handle playback state
-        if (wasPlaying) {
-            this.audio.addEventListener('canplaythrough', () => {
-                // Check if we're on mobile and need user interaction
-                if (this.audioContext.state === 'suspended') {
-                    this.isPlaying = false;
-                    this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                } else {
-                    this.play();
-                }
-            }, { once: true });
-        } else {
-            this.isPlaying = false;
-            this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
-        }
+        };
+
+        // Try both extensions
+        Promise.any([
+            tryLoad('.mp3'),
+            tryLoad('.MP3')
+        ]).then(audio => {
+            this.audio = audio;
+            this.audio.volume = currentVolume;
+            this.audio.preload = 'auto';
+            
+            // Set up event listeners on new audio element
+            this.cleanupAudioListeners = this.setupAudioEventListeners(this.audio);
+            
+            // Update display
+            this.currentTrackElement.textContent = trackName;
+            this.currentArtistElement.textContent = 'CHEEBA';
+            
+            // Update Media Session Metadata
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: trackName,
+                    artist: 'CHEEBA',
+                    album: 'CHEEBA 420',
+                    artwork: [
+                        {
+                            src: 'albumcover.png',
+                            sizes: '512x512',
+                            type: 'image/png'
+                        }
+                    ]
+                });
+            }
+            
+            // Update track list and UI
+            this.updateTrackList();
+            
+            // Handle playback state
+            if (wasPlaying) {
+                this.audio.addEventListener('canplaythrough', () => {
+                    if (this.audioContext.state === 'suspended') {
+                        this.audioContext.resume().then(() => this.play());
+                    } else {
+                        this.play();
+                    }
+                }, { once: true });
+            } else {
+                this.isPlaying = false;
+                this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }).catch(error => {
+            console.error('Failed to load track:', error);
+            this.handleAudioError();
+        });
     }
 
     togglePlay() {

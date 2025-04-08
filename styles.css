@@ -513,39 +513,118 @@ footer {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-    html {
+    html, body {
         height: 100%;
-    }
-
-    body {
-        min-height: 100%;
-        background: var(--background-color);
-        background-image: none;
-        padding: 0;
         margin: 0;
-        position: relative;
-        overflow-y: auto;
+        padding: 0;
+        overflow-x: hidden;
+        background: var(--background-color);
     }
 
     .container {
         width: 100%;
-        min-height: 100vh;
+        height: 100%;
         margin: 0;
-        padding: 1rem;
+        padding: 16px;
         border-radius: 0;
         box-shadow: none;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        display: flex;
+        flex-direction: column;
+    }
+
+    header {
+        margin-bottom: 20px;
+    }
+
+    .logo-text {
+        font-size: 28px;
+    }
+
+    .logo-number {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .player-section {
+        margin-bottom: 20px;
+    }
+
+    .now-playing {
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+
+    .album-art {
+        width: 60px;
+        height: 60px;
+    }
+
+    .track-info h2 {
+        font-size: 16px;
+    }
+
+    .track-info p {
+        font-size: 14px;
+    }
+
+    .player-container {
+        padding: 12px;
+    }
+
+    .progress-container {
+        margin-bottom: 16px;
+    }
+
+    .progress-bar {
+        height: 3px;
+    }
+
+    .controls {
+        gap: 16px;
+    }
+
+    .control-btn {
+        font-size: 18px;
+        padding: 8px;
+    }
+
+    #play {
+        font-size: 24px;
+        width: 48px;
+        height: 48px;
+    }
+
+    .volume-control {
+        gap: 8px;
+    }
+
+    #volume {
+        width: 80px;
     }
 
     .playlist-section {
         flex: 1;
-        overflow-y: visible;
-        padding-bottom: 100px;
+        overflow-y: auto;
+        margin-bottom: 80px;
     }
 
-    .tracks-container {
-        overflow-y: visible;
+    .playlist {
+        padding: 16px;
+    }
+
+    .playlist h3 {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+    #trackList li {
+        padding: 12px;
+        font-size: 14px;
+        margin-bottom: 4px;
     }
 
     footer {
@@ -554,8 +633,16 @@ footer {
         left: 0;
         right: 0;
         background: var(--background-color);
-        padding: 1rem;
+        padding: 16px;
         z-index: 100;
+    }
+
+    .social-links {
+        gap: 20px;
+    }
+
+    .social-icon {
+        font-size: 20px;
     }
 
     .loading-text {

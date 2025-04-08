@@ -22,9 +22,34 @@ class MusicPlayer {
             'Thy Holy Zoot'
         ];
         this.shuffledPlaylist = [...this.playlist];
+        
+        // Enable mobile audio
+        this.enableMobileAudio();
+        
         this.initializePlayer();
         this.setupEventListeners();
         this.setupBackgroundPlayback();
+    }
+
+    enableMobileAudio() {
+        // Create audio context for mobile
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.audioContext = new AudioContext();
+
+        // Handle various user interactions to enable audio
+        const userInteractionEvents = ['touchstart', 'touchend', 'click', 'keydown'];
+        const enableAudio = () => {
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+            userInteractionEvents.forEach(event => {
+                document.removeEventListener(event, enableAudio);
+            });
+        };
+
+        userInteractionEvents.forEach(event => {
+            document.addEventListener(event, enableAudio);
+        });
     }
 
     initializePlayer() {
@@ -135,6 +160,7 @@ class MusicPlayer {
         const newAudio = new Audio();
         newAudio.src = `songs/${trackName}.mp3`;
         newAudio.volume = currentVolume;
+        newAudio.preload = 'auto'; // Preload audio for better mobile performance
         
         // Clean up old audio element and its event listeners
         if (this.audio) {
@@ -180,7 +206,13 @@ class MusicPlayer {
         // Handle playback state
         if (wasPlaying) {
             this.audio.addEventListener('canplaythrough', () => {
-                this.play();
+                // Check if we're on mobile and need user interaction
+                if (this.audioContext.state === 'suspended') {
+                    this.isPlaying = false;
+                    this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                } else {
+                    this.play();
+                }
             }, { once: true });
         } else {
             this.isPlaying = false;
@@ -197,6 +229,11 @@ class MusicPlayer {
     }
 
     play() {
+        // Resume audio context if suspended (needed for mobile)
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+
         const playPromise = this.audio.play();
         if (playPromise !== undefined) {
             playPromise.then(() => {
@@ -204,6 +241,12 @@ class MusicPlayer {
                 this.playBtn.innerHTML = '<i class="fas fa-pause"></i>';
             }).catch(error => {
                 console.error('Playback failed:', error);
+                // Handle mobile autoplay restriction
+                if (error.name === 'NotAllowedError') {
+                    // Show a play button or message to the user
+                    this.isPlaying = false;
+                    this.playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
                 this.handleAudioError();
             });
         }

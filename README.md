@@ -7,7 +7,7 @@ _By the good folks at Cheeba Cheeba, Sheffield_
 ## 🔊 The Vibe
 
 A fully responsive, animated, and immersive one-page music experience for the *Cheeba 420* album.  
-Nine tracks. Infinite vibes. No skips. Made with HTML, CSS, and JavaScript.  
+Ten tracks. Infinite vibes. No skips. Made with HTML, CSS, and JavaScript.  
 This isn’t just a player — it’s a **digital shrine** to a cultural moment.
 
 ---

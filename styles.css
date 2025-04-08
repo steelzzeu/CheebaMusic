@@ -29,6 +29,10 @@ body {
     background: url('backgroundimage.png') no-repeat center center fixed;
     background-size: cover;
     -webkit-overflow-scrolling: touch;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 .particles-container {
@@ -55,6 +59,7 @@ body {
     animation: fadeIn 1s ease 3s forwards;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    margin: 2rem auto;
 }
 
 header {
@@ -508,76 +513,39 @@ footer {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-    html, body {
-        position: fixed;
-        overflow: hidden;
-        width: 100%;
+    html {
         height: 100%;
     }
 
     body {
+        min-height: 100%;
         background: var(--background-color);
+        background-image: none;
         padding: 0;
+        margin: 0;
+        position: relative;
+        overflow-y: auto;
     }
 
     .container {
-        height: 100%;
-        min-height: 100%;
-        padding: 1rem;
+        width: 100%;
+        min-height: 100vh;
         margin: 0;
+        padding: 1rem;
         border-radius: 0;
         box-shadow: none;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
     }
 
-    header {
-        margin-bottom: 1rem;
-    }
-
-    .logo-text {
-        font-size: 2rem;
-    }
-    
-    .logo-number {
-        font-size: 1.6rem;
-    }
-
-    .controls {
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .volume-control {
-        width: 100%;
-        justify-content: center;
-        margin-top: 0.5rem;
-    }
-
-    .now-playing {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-    }
-
-    .player-container {
-        padding: 0.75rem;
-    }
-
-    .playlist {
-        margin-bottom: 0;
-    }
-
     .playlist-section {
         flex: 1;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 80px; /* Space for fixed footer */
-        margin-bottom: 0;
+        overflow-y: visible;
+        padding-bottom: 100px;
     }
 
     .tracks-container {
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow-y: visible;
     }
 
     footer {

@@ -11,10 +11,10 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
     width: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+    height: 100%;
+    position: fixed;
+    overflow: hidden;
 }
 
 * {
@@ -28,11 +28,7 @@ body {
     color: var(--text-color);
     background: url('backgroundimage.png') no-repeat center center fixed;
     background-size: cover;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Changed from center to allow scrolling */
-    padding: 20px 0; /* Add some padding for better mobile experience */
+    -webkit-overflow-scrolling: touch;
 }
 
 .particles-container {
@@ -51,12 +47,14 @@ body {
     background: var(--background-color);
     border-radius: 12px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-    min-height: 90vh; /* Changed from height to min-height */
+    min-height: 90vh;
     display: flex;
     flex-direction: column;
     position: relative;
     opacity: 0;
     animation: fadeIn 1s ease 3s forwards;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 header {
@@ -170,6 +168,9 @@ header {
     justify-content: center;
     align-items: center;
     gap: 1.5rem;
+    position: relative;
+    z-index: 5;
+    padding: 0.5rem 0;
 }
 
 .control-btn {
@@ -181,15 +182,34 @@ header {
     transition: all 0.3s ease;
     padding: 0.5rem;
     border-radius: 50%;
+    position: relative;
+    z-index: 10;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-.control-btn:hover {
-    color: var(--primary-color);
-    transform: scale(1.1);
+.control-btn:active {
+    transform: scale(0.95);
 }
 
 #play {
     font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+#play:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#play:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .volume-control {
@@ -488,17 +508,27 @@ footer {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    html, body {
+        position: fixed;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
+
     body {
         background: var(--background-color);
         padding: 0;
     }
 
     .container {
+        height: 100%;
+        min-height: 100%;
         padding: 1rem;
-        min-height: 100vh;
-        height: auto; /* Allow container to expand */
+        margin: 0;
         border-radius: 0;
         box-shadow: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     header {
@@ -541,11 +571,13 @@ footer {
         flex: 1;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        margin-bottom: 80px; /* Add space for footer */
+        padding-bottom: 80px; /* Space for fixed footer */
+        margin-bottom: 0;
     }
 
     .tracks-container {
-        max-height: none; /* Remove max height restriction */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     footer {
